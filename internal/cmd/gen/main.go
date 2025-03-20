@@ -30,13 +30,6 @@ type CreateUserRequest struct {
 
 // Lambda のハンドラー関数
 func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	if event.HTTPMethod != "POST" {
-		return events.APIGatewayProxyResponse{
-			StatusCode: 405,
-			Body:       "Method Not Allowed",
-		}, nil
-	}
-
 	var req CreateUserRequest
 	if err := json.Unmarshal([]byte(event.Body), &req); err != nil || req.Username == "" {
 		return events.APIGatewayProxyResponse{
