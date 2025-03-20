@@ -18,9 +18,6 @@ import (
 type DBSecret struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	DbName   string `json:"dbname"`
 }
 
 // リクエストボディ用の構造体
@@ -61,16 +58,12 @@ func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxy
 		}, nil
 	}
 
-	// ログ出力して接続情報を確認
-	fmt.Printf("DB Host: %s, DB Port: %s\n", secret.Host, secret.Port)
-	fmt.Printf("DB Username: %s\n", secret.Username)
-	fmt.Printf("DB Name: %s\n", secret.DbName)
-	fmt.Printf("DB Secret ARN: %s\n", secretName)
-	fmt.Printf("Region: %s\n", region)
-
 	// DB に接続
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?multiStatements=true",
-		secret.Username, secret.Password, secret.Host, secret.Port, secret.DbName)
+		secret.Username, secret.Password, host, port, dbName)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return events.APIGatewayProxyResponse{
