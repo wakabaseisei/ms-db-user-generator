@@ -29,12 +29,24 @@ type CreateUserRequest struct {
 }
 
 // Lambda のハンドラー関数
-func handler(ctx context.Context, event events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error) {
 	var req CreateUserRequest
-	if err := json.Unmarshal([]byte(event.Body), &req); err != nil || req.Username == "" {
+	if err := json.Unmarshal([]byte(event), &req); err != nil || req.Username == "" {
+		// エラーメッセージをBodyに含める
+		var errorMessage string
+		if err != nil {
+			// json.Unmarshal のエラー詳細を Body に含める
+			errorMessage += fmt.Sprintf("Error unmarshalling JSON: %v\n", err)
+		}
+		if req.Username == "" {
+			// 'username' が空の場合のエラーメッセージ
+			errorMessage += "Error: 'username' field is missing in the request.\n"
+		}
+
+		// エラーレスポンスを返す
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
-			Body:       "Invalid request body or missing username",
+			Body:       fmt.Sprintf("Invalid request body: %s", errorMessage),
 		}, nil
 	}
 
