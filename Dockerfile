@@ -21,4 +21,6 @@ FROM gcr.io/distroless/base-debian12:nonroot
 COPY --from=builder /bin/gen /bin/gen
 COPY --from=builder /go/bin/migrate /bin/migrate
 
+RUN chmod +x /bin/gen /bin/migrate
+
 ENTRYPOINT ["/bin/gen"]
