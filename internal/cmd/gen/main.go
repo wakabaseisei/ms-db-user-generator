@@ -14,40 +14,32 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// Secrets Manager のレスポンス構造体
 type DBSecret struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-// リクエストボディ用の構造体
 type CreateUserRequest struct {
 	Username string `json:"username"`
 }
 
-// Lambda のハンドラー関数
 func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error) {
 	var req CreateUserRequest
 	if err := json.Unmarshal([]byte(event), &req); err != nil || req.Username == "" {
-		// エラーメッセージをBodyに含める
 		var errorMessage string
 		if err != nil {
-			// json.Unmarshal のエラー詳細を Body に含める
 			errorMessage += fmt.Sprintf("Error unmarshalling JSON: %v\n", err)
 		}
 		if req.Username == "" {
-			// 'username' が空の場合のエラーメッセージ
 			errorMessage += "Error: 'username' field is missing in the request.\n"
 		}
 
-		// エラーレスポンスを返す
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
 			Body:       fmt.Sprintf("Invalid request body: %s", errorMessage),
 		}, nil
 	}
 
-	// Secrets Manager から DB 認証情報を取得
 	secretName := os.Getenv("DB_SECRET_ARN")
 	region := os.Getenv("AWS_REGION")
 	secret, err := getDBSecret(secretName, region)
@@ -58,7 +50,6 @@ func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxy
 		}, nil
 	}
 
-	// DB に接続
 	host := os.Getenv("DB_HOST")
 	port := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
@@ -73,7 +64,6 @@ func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxy
 	}
 	defer db.Close()
 
-	// ユーザー作成
 	if err := createDBUser(db, req.Username); err != nil {
 		return events.APIGatewayProxyResponse{
 			StatusCode: 500,
@@ -87,7 +77,6 @@ func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxy
 	}, nil
 }
 
-// Secrets Manager から RDS の認証情報を取得
 func getDBSecret(secretName, region string) (*DBSecret, error) {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
 	if err != nil {
