@@ -112,8 +112,14 @@ func createDBUser(db *sql.DB, username string) error {
 
 	// ユーザーに SSL 必須を設定
 	alterUserQuery := fmt.Sprintf("ALTER USER '%s' REQUIRE SSL;", username)
-	_, err = db.Exec(alterUserQuery)
-	return err
+	_, aerr := db.Exec(alterUserQuery)
+	if aerr != nil {
+		return aerr
+	}
+
+	grantUserQuery := fmt.Sprintf("GRANT CREATE on *.* to '%s'@'%%';", username)
+	_, gerr := db.Exec(grantUserQuery)
+	return gerr
 }
 
 func main() {
