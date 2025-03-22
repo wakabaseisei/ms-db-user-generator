@@ -117,7 +117,7 @@ func createDBUser(db *sql.DB, username string) error {
 		return aerr
 	}
 
-	grantUserQuery := fmt.Sprintf("GRANT CREATE on *.* to '%s'@'%%';", username)
+	grantUserQuery := fmt.Sprintf("GRANT CREATE, DROP, SELECT, INSERT, UPDATE, DELETE on *.* to '%s'@'%%';", username)
 	_, gerr := db.Exec(grantUserQuery)
 	return gerr
 }
