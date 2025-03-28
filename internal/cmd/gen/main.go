@@ -101,7 +101,6 @@ func getDBSecret(secretName, region string) (*DBSecret, error) {
 	return &secret, nil
 }
 
-// 新しいデータベースユーザーを作成
 func createDBUser(db *sql.DB, username string) error {
 	// ユーザーを作成
 	createUserQuery := fmt.Sprintf("CREATE USER '%s' IDENTIFIED WITH AWSAuthenticationPlugin AS 'RDS';", username)
