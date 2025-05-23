@@ -83,5 +83,5 @@ locals {
 3. **`ms-infra` リポジトリの `modules/database` で `local.ms_db_user_generator.image_tag` を差し替え**
 
 ### 👤 マイクロサービスオーナーの作業
-4. **`modules/database` を呼び出すマイクロサービス（例: `services/ms-user/dev`）にて Terraform Apply を実行**
-5. **Apply により Lambda 関数が生成・実行され、IAM 認証ユーザーが Aurora に作成される**
+1. **`modules/database` を呼び出すマイクロサービス（例: `services/ms-user/dev`）にて Terraform Apply を実行**
+2. **Apply により Lambda 関数が生成・実行され、IAM 認証ユーザーが Aurora に作成される**
