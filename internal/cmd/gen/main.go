@@ -40,6 +40,7 @@ func handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxy
 		}, nil
 	}
 
+	// TODO: env
 	secretName := os.Getenv("DB_SECRET_ARN")
 	region := os.Getenv("AWS_REGION")
 	secret, err := getDBSecret(secretName, region)
